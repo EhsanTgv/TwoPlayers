@@ -4,18 +4,36 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import com.taghavi.twoplayers.databinding.ActivityMainBinding
 import kotlin.math.ln
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
     private val MAX_VOLUME = 100
     lateinit var mediaPlayer: MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setupMusicPlayer()
+
+        binding.mainSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                mediaPlayer.setVolume(setVolume(progress), setVolume(progress))
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            }
+
+        })
     }
 
     private fun setupMusicPlayer() {
@@ -34,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setVolume(volume:Int): Float {
+    private fun setVolume(volume: Int): Float {
         return (1 - (ln(MAX_VOLUME.toDouble() - volume) / ln(MAX_VOLUME.toDouble()))).toFloat()
     }
 }
