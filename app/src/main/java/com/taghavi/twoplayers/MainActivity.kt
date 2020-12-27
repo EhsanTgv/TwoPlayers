@@ -5,8 +5,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import kotlin.math.ln
 
 class MainActivity : AppCompatActivity() {
+    private val MAX_VOLUME = 100
     lateinit var mediaPlayer: MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,8 +21,9 @@ class MainActivity : AppCompatActivity() {
     private fun setupMusicPlayer() {
         mediaPlayer = MediaPlayer()
         try {
-            mediaPlayer.setDataSource(this, Uri.parse("http://www.hochmuth.com/mp3/Haydn_Cello_Concerto_D-1.mp3"))
+            mediaPlayer.setDataSource(this, Uri.parse("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"))
             mediaPlayer.prepareAsync()
+            mediaPlayer.setVolume(setVolume(20), setVolume(20))
             mediaPlayer.setOnPreparedListener {
                 Log.i("media", "started")
                 mediaPlayer.start()
@@ -29,5 +32,9 @@ class MainActivity : AppCompatActivity() {
             Log.i("media", "$e")
             e.printStackTrace()
         }
+    }
+
+    private fun setVolume(volume:Int): Float {
+        return (1 - (ln(MAX_VOLUME.toDouble() - volume) / ln(MAX_VOLUME.toDouble()))).toFloat()
     }
 }
