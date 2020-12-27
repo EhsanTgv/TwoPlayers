@@ -13,46 +13,79 @@ import kotlin.math.ln
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val MAX_VOLUME = 100
-    lateinit var mediaPlayer: MediaPlayer
+    lateinit var mediaPlayer1: MediaPlayer
+    lateinit var mediaPlayer2: MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupMusicPlayer()
-
-        binding.mainSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                mediaPlayer.setVolume(setVolume(progress), setVolume(progress))
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            }
-
-        })
+        setupMusicPlayer1()
+        setupMusicPlayer2()
     }
 
-    private fun setupMusicPlayer() {
-        mediaPlayer = MediaPlayer()
-        try {
-            mediaPlayer.setDataSource(this, Uri.parse("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"))
-            mediaPlayer.prepareAsync()
-            mediaPlayer.setVolume(setVolume(20), setVolume(20))
-            mediaPlayer.setOnPreparedListener {
-                Log.i("media", "started")
-                mediaPlayer.start()
+    private fun setupMusicPlayer1() {
+        mediaPlayer1 = MediaPlayer()
+        with(mediaPlayer1) {
+            try {
+                setDataSource(this@MainActivity, Uri.parse("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"))
+                prepareAsync()
+                isLooping = true
+                setOnPreparedListener {
+                    start()
+
+                    binding.mainSeekBar1.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                            setVolume(setMediaVolume(progress), setMediaVolume(progress))
+                        }
+
+                        override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                        }
+
+                        override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                        }
+
+                    })
+                }
+            } catch (e: Exception) {
+                Log.i("media", "$e")
+                e.printStackTrace()
             }
-        } catch (e: Exception) {
-            Log.i("media", "$e")
-            e.printStackTrace()
         }
     }
 
-    private fun setVolume(volume: Int): Float {
+    private fun setupMusicPlayer2() {
+        mediaPlayer2 = MediaPlayer()
+        with(mediaPlayer2) {
+            try {
+                setDataSource(this@MainActivity, Uri.parse("https://filesamples.com/samples/audio/mp3/sample1.mp3"))
+                prepareAsync()
+                isLooping = true
+                setOnPreparedListener {
+                    start()
+
+                    binding.mainSeekBar2.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                            setVolume(setMediaVolume(progress), setMediaVolume(progress))
+                        }
+
+                        override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                        }
+
+                        override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                        }
+
+                    })
+                }
+            } catch (e: Exception) {
+                Log.i("media", "$e")
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun setMediaVolume(volume: Int): Float {
         return (1 - (ln(MAX_VOLUME.toDouble() - volume) / ln(MAX_VOLUME.toDouble()))).toFloat()
     }
 }
